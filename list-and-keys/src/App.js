@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import MoviesList from './MoviesList';
+import { v4 as uuidv4 } from 'uuid';
 
 const moviesData = [
   { 'hasOscars': false, 'title': 'The Shawshank Redemption', 'director': 'Frank Darabont', 'rate': '9.3', 'id': 0 },
@@ -13,29 +14,94 @@ const moviesData = [
 class App extends React.Component {
 
   state = {
-    movies: moviesData
+    movies: moviesData,
+    title: '',
+    director: '',
+    hasOscars: false
     // movies: []
   }
 
-  addMovie = () => {
-    const newMovie = { 'hasOscars': true, 'title': 'Interstellar', 'director': 'Christopher Nolan', 'rate': '9.3', 'id': 31 }
-    // alternative
-    const moviesCopy = this.state.movies.slice();
-    moviesCopy.push(newMovie);
+  // handleTitleChange = event => {
+  //   console.log(event.target.value);
+  //   this.setState({
+  //     title: event.target.value
+  //   })
+  // }
+
+  // handleDirectorChange = event => {
+  //   console.log(event.target.value);
+  //   this.setState({
+  //     director: event.target.value
+  //   })
+  // }
+
+
+  handleChange = event => {
+    console.log(event.target.value);
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
     this.setState({
-      movies: moviesCopy
-      // movies: [...this.state.movies, newMovie]
+      [name]: value
     })
-    // this.setState((state) => ({
-    //   movies: state.movies.concat(newMovie)
-    // }))
+  }
+
+  // handleOscarsChange = event => {
+  //   console.log(event.target.checked);
+  //   this.setState({
+  //     hasOscars: event.target.checked
+  //   })
+  // }
+
+  handleSubmit = event => {
+    event.preventDefault();
+    const { title, director, hasOscars } = this.state;
+    const newMovie = {
+      title,
+      director,
+      hasOscars,
+      id: uuidv4()
+    }
+    // console.log(newMovie);
+    this.setState((state) =>({ 
+      movies: [newMovie, ...state.movies],
+      title: '',
+      director: '',
+      hasOscars: false
+    }))
   }
 
   render() {
     return (
       <div className='App'>
+        <form onSubmit={this.handleSubmit}>
+          <label htmlFor="title">Title: </label>
+          <input
+            type="text"
+            name="title"
+            id="title"
+            value={this.state.title}
+            onChange={this.handleTitleChange}
+          />
+          <label htmlFor="director">Director: </label>
+          <input
+            type="text"
+            name="director"
+            id="director"
+            value={this.state.director}
+            onChange={this.handleDirectorChange}
+          />
+          <label htmlFor="hasOscars">Oscar ? </label>
+          <input
+            type="checkbox"
+            name="hasOscars"
+            id="hasOscars"
+            checked={this.state.hasOscars}
+            onChange={this.handleOscarsChange}
+          />
+          <button type="submit">Add a movie</button>
+        </form>
         <h1>Movies</h1>
-        <button onClick={this.addMovie}>Add a movie</button>
 
         {/* // if length of movies is 0 then show an h2 no movies ... */}
         {this.state.movies.length === 0 && <h2>No movies to display 🙃</h2>}
@@ -47,3 +113,4 @@ class App extends React.Component {
 }
 
 export default App;
+
